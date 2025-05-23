@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Ballard Brief Map</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+        
+        <style>
+          /* Style the map container */
+          #map {
+            height: 600px;
+            width: 100%;
+            max-width: 1100px;
+            margin: 2rem auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+          }
+      
+          /* Optional: Smooth body font */
+          body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+          }
+      
+          /* Match popup text styling to site */
+          .leaflet-popup-content {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+          }
+      
+          .leaflet-popup-content a {
+            color: #00a1cb; /* Matches your site's primary blue */
+            text-decoration: underline;
+          }
+        </style>
+      </head>
+<body>
+
+<h2>Ballard Brief World Map</h2>
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+// Initialize map with boundaries to stop infinite horizontal scrolling
+var map = L.map('map', {
+  worldCopyJump: false,
+  maxBounds: [
+    [-85, -180], // Southwest corner
+    [85, 180]    // Northeast corner
+  ],
+  maxBoundsViscosity: 1.0
+}).setView([20, 0], 2);
+
+  // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+}).addTo(map);
+
+  // Brief locations and links
+  const briefs = [
+    {
+      location: "Africa",
+      lat: 1.6508,
+      lng: 17.6791,
+      briefs: [
+        { title: "Female Genital Cutting in Africa", url: "https://ballardbrief.byu.edu/issue-briefs/female-genital-cutting-in-africa" }
+      ]
+    },
+    {
+      location: "United States",
+      lat: 39.8283,
+      lng: -98.5795,
+      briefs: [
+        { title: "Illiteracy Among Adults in the US", url: "https://ballardbrief.byu.edu/issue-briefs/illiteracy-among-adults-in-the-us" },
+        { title: "Living Conditions in U.S. Immigration Detention", url: "https://scholarsarchive.byu.edu/ballardbrief/vol2019/iss2/2/" },
+        { title: "Mental Illness Among Adolescent Refugees in the US", url: "https://ballardbrief.byu.edu/issue-briefs/mental-illness-among-adolescent-refugees-in-the-united-states" },
+        { title: "Mass Incarceration in the US", url: "https://ballardbrief.byu.edu/issue-briefs/mass-incarceration-in-the-united-states" },
+        { title: "Usage of Electronic Cigarettes Among Youth in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/usage-of-electronic-cigarettes-among-youth-in-the-united-states" },
+        { title: "Substance Abuse Among College Students in the US", url: "https://ballardbrief.byu.edu/issue-briefs/substance-abuse-among-college-students-in-the-united-states" },
+        { title: "Homelessness in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/homelessness-in-the-united-states" },
+        { title: "Isolation Among Generation Z in the US", url: "https://ballardbrief.byu.edu/issue-briefs/isolation-among-generation-z-in-the-united-states" },
+        { title: "Domestic Violence Against Women in the US", url: "https://ballardbrief.byu.edu/issue-briefs/domestic-violence-against-women-in-the-united-states" },
+        { title: "Chronic Poverty Among Youth in the US", url: "https://ballardbrief.byu.edu/issue-briefs/effects-of-chronic-poverty-on-youth-in-the-united-states" },
+        { title: "Linguistic Neglect of Deaf Children in the US", url: "https://ballardbrief.byu.edu/issue-briefs/linguistic-neglect-of-deaf-children-in-the-united-states?rq=linguistic" },
+        { title: "Decreased Allowance of Refugees in the US", url: "https://ballardbrief.byu.edu/issue-briefs/decreased-allowance-of-refugees-in-the-united-states" },
+        { title: "Opioid Use Disorder in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/opioid-use-disorder-in-the-united-states" },
+        { title: "Sexual Violence Against Female College Students in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/sexual-violence-against-female-college-students-in-the-united-states" },
+        { title: "Low Immunization Rates in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/low-immunization-rates-in-the-us" },
+        { title: "Indigenous Adult Illiteracy in the Andean Region of South America", url: "https://ballardbrief.byu.edu/issue-briefs/indigenous-adult-illiteracy-in-the-andean-region-of-south-america" },
+        { title: "Educational Disparities Among Ethnic & Racial Minority Youth in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/educational-disparities-among-racial-and-ethnic-minority-youth-in-the-united-states" },
+        { title: "The Rise of Depression and Anxiety Among Young Adults in the US", url: "https://ballardbrief.byu.edu/issue-briefs/the-rise-of-anxiety-and-depression-among-young-adults-in-the-united-states" },
+        { title: "Exposure to Toxic Chemicals in Consumer Products in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/exposure-to-toxic-chemicals-in-consumer-products-in-the-united-states" },
+        { title: "The Spread of Misinformation in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/the-effects-of-medical-misinformation-on-the-american-public" },
+        { title: "Abuse and Neglect against Elderly Adults in Nursing Homes in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/abuse-and-neglect-against-elderly-adults-in-nursing-homes-in-the-united-states" },
+        { title: "Intergenerational Poverty in the US", url: "https://ballardbrief.byu.edu/issue-briefs/intergenerational-poverty-in-the-us-83scy" },
+        { title: "Maternal Mortality Among Black Women in the US", url: "https://ballardbrief.byu.edu/issue-briefs/maternal-mortality-among-black-women-in-the-united-states" },
+        { title: "Discrimination Against Muslims in the US", url: "https://ballardbrief.byu.edu/issue-briefs/discrimination-against-muslims-in-the-united-states" },
+        { title: "Challenges for People with Disabilities", url: "https://ballardbrief.byu.edu/issue-briefs/challenges-for-people-with-disabilities" },
+        { title: "Sex Trafficking of Youth in the U.S.", url: "https://ballardbrief.byu.edu/issue-briefs/sex-trafficking-of-youth-in-the-united-states" },
+        { title: "Inadequate Maternal Health Care for Women in the US", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-maternal-health-care-for-women-in-the-united-states" },
+        { title: "Food Waste in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/food-waste-in-the-united-states" },
+        { title: "Inadequate Sexual Health Education in the US", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-sexual-health-education-for-high-school-students-in-the-united-states" },
+        { title: "Lack of Child Protection in US Custody Proceedings Involving Allegations of Abuse", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-child-protection-in-us-custody-proceedings-involving-allegations-of-abuse" },
+        { title: "Postpartum Depression among Adolescent Mothers in the US", url: "https://ballardbrief.byu.edu/issue-briefs/postpartum-depression-among-adolescent-mothers-in-the-united-states" },
+        { title: "The Socioeconomic Achievement Gap in the US Public Schools", url: "https://ballardbrief.byu.edu/issue-briefs/the-socioeconomic-achievement-gap-in-the-us-public-schools" },
+        { title: "Green Energy Usage in the US", url: "https://ballardbrief.byu.edu/issue-briefs/green-energy-usage-in-the-united-states" },
+        { title: "Sexual Abuse of Children in the United States Foster Care System", url: "https://ballardbrief.byu.edu/issue-briefs/sexual-abuse-of-children-in-the-united-states-foster-care-system" },
+        { title: "Disproportionate Exposure to Air Pollution for Low-Income Communities in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/disproportionate-exposure-to-air-pollution-for-low-income-communities-in-the-united-states" },
+        { title: "Educaional Disparities Among Racial and Ethnic Minority Youth in the United Staes", url: "https://ballardbrief.byu.edu/issue-briefs/educational-disparities-among-racial-and-ethnic-minority-youth-in-the-united-states" },
+        { title: "Lack of Quality Civic Engagement in Public Schools in the US", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-quality-civic-education-in-public-schools-in-the-united-states" },
+        { title: "Barriers to Career Advancement among Skilled Immigrants in the US", url: "https://ballardbrief.byu.edu/issue-briefs/barriers-to-career-advancement-among-skilled-immigrants-in-the-us" },
+        { title: "Inadequate Healthcare Services among Individudals with Autism in the US", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-healthcare-services-among-individuals-with-autism-in-the-united-states" },
+        { title: "Financial Inaccessibility of Mental Healthcare in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/financial-inaccessibility-of-mental-healthcare-in-the-united-states" },
+        { title: "Prevalence of Alzheimer's Disease in Adults in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/prevalence-of-alzheimers-disease-in-adults-in-the-united-states" },
+        { title: "The Homeownership Gap between Black and White Families in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/the-homeownership-gap-between-black-and-white-families-in-the-united-states" },
+        { title: "Impacts of Climate Change in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/impacts-of-climate-change-in-the-united-states" },
+        { title: "Pornography use Among Young Adults in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/pornography-use-among-young-adults-in-the-united-states" },
+        { title: "The Underreporting and Dismissal of Sexual Assault Cases Against Women in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/the-underreporting-and-dismissal-of-sexual-assault-cases-against-women-in-the-united-states" },
+        { title: "Childhood Obesity in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/childhood-obesity-in-the-united-states" },
+        { title: "Mental Health Challenges Among Physicians in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/mental-health-challenges-among-physicians-in-the-united-states" },
+        { title: "Mass Shootings in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/mass-shootings-in-the-united-states" },
+        { title: "Lack of Women in Federal Level Politics in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-women-in-federal-level-politics-in-the-united-states" },
+        { title: "Home Ownership Inaccessibility for Upcoming Generations in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/home-ownership-inaccessibility-for-upcoming-generations-in-the-united-states" },
+        { title: "Inadequate Healthcare for Women in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/barriers-to-adequate-healthcare-for-women-in-the-united-states" }
+      ]
+    },
+    {
+      location: "Pine Ridge Reservation, South Dakota",
+      lat: 43.026,
+      lng: -102.556,
+      briefs: [
+        { title: "Sexual Assault on Native American Reservations in the US", url: "https://ballardbrief.byu.edu/issue-briefs/sexual-assault-on-native-american-reservations-in-the-us" }
+      ]
+    },
+    {
+      location: "Richmond, Virginia",
+      lat: 37.5407,
+      lng: -77.4360,
+      briefs: [
+        { title: "Public Confederate Markers in the US", url: "https://ballardbrief.byu.edu/issue-briefs/public-confederate-markers-in-the-united-states" }
+      ]
+    },
+    {
+      location: "El Paso, Texas",
+      lat: 31.7619,
+      lng: -106.4850,
+      briefs: [
+        { title: "Inadequate Immigration System for Asylum Seekers at the US-Mexico Border", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-immigration-system-for-asylum-seekers-at-the-us-mexico-border" }
+      ]
+    },
+    {
+      location: "San Diego, California",
+      lat: 32.7157,
+      lng: -117.1611,
+      briefs: [
+        { title: "Untreated Mental Illnesses Among Veterans in the U.S.", url: "https://ballardbrief.byu.edu/issue-briefs/untreated-mental-illness-among-veterans-in-the-united-states" }
+      ]
+    },
+    {
+      location: "Atlanta, Georgia",
+      lat: 33.7490,
+      lng: -84.3880,
+      briefs: [
+        { title: "Maternal Mortality Among Black Women in the US", url: "https://ballardbrief.byu.edu/issue-briefs/maternal-mortality-among-black-women-in-the-united-states" }
+      ]
+    },
+    {
+      location: "Jackson, Mississippi",
+      lat: 32.2988,
+      lng: -90.1848,
+      briefs: [
+        { title: "Racial Inequality in Public School Discipline for Black Students in the US", url: "https://ballardbrief.byu.edu/issue-briefs/racial-inequality-in-public-school-discipline-for-black-students-in-the-united-states" }
+      ]
+    },
+    {
+      location: "Selma, Alabama",
+      lat: 32.4074,
+      lng: -87.0211,
+      briefs: [
+        { title: "Disenfranchisement and Suppression of Black Voters in the United States", url: "https://ballardbrief.byu.edu/issue-briefs/disenfranchisement-and-suppression-of-black-voters-in-the-united-states" }
+      ]
+    },
+    {
+      location: "India",
+      lat: 20.5937,
+      lng: 78.9629,
+      briefs: [
+        { title: "Sexual Assault Against Women in India", url: "https://ballardbrief.byu.edu/issue-briefs/sexual-assault-against-women-in-india" },
+        { title: "Educational Disparities Among Girls in India", url: "https://ballardbrief.byu.edu/issue-briefs/educational-disparities-among-girls-in-india" },
+        { title: "Violence Against Muslims in India", url: "https://ballardbrief.byu.edu/issue-briefs/violence-against-muslims-in-india" },
+        { title: "Son Preference in India", url: "https://ballardbrief.byu.edu/issue-briefs/son-preference-in-india" }
+      ]
+    },
+    {
+      location: "Banda District, Rural Uttar Pradesh, India",
+      lat: 25.4751,
+      lng: 80.3358,
+      briefs: [
+        { title: "Healthcare Access in Rural Communities in India", url: "https://ballardbrief.byu.edu/issue-briefs/healthcare-access-in-rural-communities-in-india" }
+      ]
+    },
+    {
+      location: "Middle East",
+      lat: 29.2985,
+      lng: 47.9939,
+      briefs: [
+        { title: "Mental Illness Among Refugees in the Middle East", url: "https://ballardbrief.byu.edu/issue-briefs/mental-illness-among-refugees-in-the-middle-east" }
+      ]
+    },
+    {
+      location: "Ghana",
+      lat: 7.9465,
+      lng: -1.0232,
+      briefs: [
+        { title: "Girls' Access to Education in Ghana", url: "https://ballardbrief.byu.edu/issue-briefs/girls-access-to-education-in-ghana" },
+        { title: "Child Labor in Ghana", url: "https://ballardbrief.byu.edu/issue-briefs/child-labor-in-ghana" },
+        { title: "Child Abuse in Residential Homes of Ghana", url: "https://ballardbrief.byu.edu/issue-briefs/child-abuse-in-residential-homes-of-ghana" }
+      ]
+    },
+    {
+      location: "Volta Region, Ghana",
+      lat: 7.5,
+      lng: 0.3,
+      briefs: [
+        { title: "Child Labor Trafficking in the Volta Region of Ghana", url: "https://ballardbrief.byu.edu/issue-briefs/child-labor-trafficking-in-the-volta-region-of-ghana" }
+      ]
+    },
+    {
+      location: "Kenya",
+      lat: -0.0236,
+      lng: 37.9062,
+      briefs: [
+        { title: "Menstrual Hygiene Management Among Adolescent Girls in Kenya", url: "https://ballardbrief.byu.edu/issue-briefs/menstrual-hygiene-management-among-adolescent-girls-in-kenya" },
+        { title: "Protracted Refugee Situations in Kenyan Refugee Camps", url: "https://ballardbrief.byu.edu/issue-briefs/protracted-refugee-situations-in-kenyan-refugee-camps" },
+      ]
+    },
+    {
+      location: "Malawi",
+      lat: -13.2543,
+      lng: 34.3015,
+      briefs: [
+        { title: "Lack of Access to Water in Rural Malawi", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-access-to-water-in-rural-malawi" }
+      ]
+    },
+    {
+      location: "Northern Ireland",
+      lat: 54.7877,
+      lng: -6.4923,
+      briefs: [
+        { title: "Troubles in Northern Ireland", url: "https://ballardbrief.byu.edu/issue-briefs/troubles-in-northern-ireland" }
+      ]
+    },
+    {
+      location: "China",
+      lat: 35.8617,
+      lng: 104.1954,
+      briefs: [
+        { title: "Elevated School Dropout Rates in Rural China", url: "https://ballardbrief.byu.edu/issue-briefs/elevated-school-dropout-rates-in-rural-china" },
+        { title: "Illegal Wildlife Trade in China", url: "https://ballardbrief.byu.edu/issue-briefs/illegal-wildlife-trade-in-china" },
+      ]
+    },
+    {
+      location: "Cambodia",
+      lat: 12.5657,
+      lng: 104.991,
+      briefs: [
+        { title: "Inadequate Residential Care for Children in Cambodia", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-residential-care-for-children-in-cambodia" },
+        { title: "Child Malnutrition in Cambodia", url: "https://ballardbrief.byu.edu/issue-briefs/child-malnutrition-in-cambodia" }
+      ]
+    },
+    {
+      location: "Tanzania",
+      lat: -6.369,
+      lng: 34.8888,
+      briefs: [
+        { title: "Perpetuation of Poverty in Rural Tanzania", url: "https://ballardbrief.byu.edu/issue-briefs/perpetuation-of-poverty-in-rural-tanzania" },
+        { title: "Land Degradation in Rural Tanzania", url: "https://ballardbrief.byu.edu/issue-briefs/land-degradation-in-rural-tanzania" }
+      ]
+    },
+    {
+      location: "Jordan River Valley",
+      lat: 31.8881,
+      lng: 35.5642,
+      briefs: [
+        { title: "Water Scarcity in the Jordan River Valley", url: "https://ballardbrief.byu.edu/issue-briefs/water-scarcity-in-the-jordan-river-valley" }
+      ]
+    },
+    {
+      location: "Venezuela",
+      lat: 6.4238,
+      lng: -66.5897,
+      briefs: [
+        { title: "Public Healthcare Crisis in Venezuela", url: "https://ballardbrief.byu.edu/issue-briefs/public-healthcare-crisis-in-venezuela" }
+      ]
+    },
+    {
+      location: "South Africa",
+      lat: -30.5595,
+      lng: 22.9375,
+      briefs: [
+        { title: "Gender-Based Violence Against Women in South Africa", url: "https://ballardbrief.byu.edu/issue-briefs/gender-based-violence-against-women-in-south-africa" }
+      ]
+    },
+    {
+      location: "Eastern Europe – Roma Communities (Košice, Slovakia)",
+      lat: 48.7164,
+      lng: 21.2611,
+      briefs: [
+        { title: "Lack of Educational Opportunities for the Roma People in Eastern Europe", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-educational-opportunities-for-the-roma-people-in-eastern-europe" }
+      ]
+    },
+    {
+      location: "Southern EU – Refugee Resettlement (Athens, Greece)",
+      lat: 37.9838,
+      lng: 23.7275,
+      briefs: [
+        { title: "Inadequate Resettlement of Refugees in the Southern European Union", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-resettlement-of-refugees-in-the-southern-european-union-1" }
+      ]
+    },
+    {
+      location: "Bangkok, Thailand – Dengue Fever",
+      lat: 13.7563,
+      lng: 100.5018,
+      briefs: [
+        { title: "Dengue Fever in South and Southeast Asia", url: "https://ballardbrief.byu.edu/issue-briefs/dengue-fever-in-south-and-southeast-asia" }
+      ]
+    },
+    {
+      location: "Manado, Indonesia – Coral Degradation",
+      lat: 1.4748,
+      lng: 124.8421,
+      briefs: [
+        { title: "The Impact of Coral Degradation on Coastal Communities in Southeast Asia", url: "https://ballardbrief.byu.edu/issue-briefs/the-impact-of-coral-degradation-on-coastal-communities-in-southeast-asia" }
+      ]
+    },
+    {
+      location: "Armenia",
+      lat: 40.0691,
+      lng: 45.0382,
+      briefs: [
+        { title: "Mental Health Concerns in Armenia", url: "https://ballardbrief.byu.edu/issue-briefs/mental-health-concerns-in-armenia" }
+      ]
+    },
+    {
+      location: "Amazon Rainforest - Manaus, Brazil",
+      lat: -3.1190,
+      lng: -60.0217,
+      briefs: [
+        { title: "Deforestation in the Amazon Rainforest", url: "https://ballardbrief.byu.edu/issue-briefs/deforestation-in-the-amazon-rainforest" }
+      ]
+    },
+    {
+      location: "São Paulo, Brazil - Adolescent STDs",
+      lat: -23.5505,
+      lng: -46.6333,
+      briefs: [
+        { title: "Sexually Transmitted Diseases Among Adolescents and Young Adults in Brazil", url: "https://ballardbrief.byu.edu/issue-briefs/sexually-transmitted-diseases-among-adolescents-and-young-adults-in-brazil" }
+      ]
+    },
+    {
+      location: "Lima, Peru - Healthcare Access",
+      lat: -12.0464,
+      lng: -77.0428,
+      briefs: [
+        { title: "Lack of Access to Quality Healthcare in Peru", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-access-to-quality-healthcare-in-peru" }
+      ]
+    },
+    {
+      location: "Cusco, Peru - Indigenous Literacy",
+      lat: -13.5319,
+      lng: -71.9675,
+      briefs: [
+        { title: "Indigenous Adult Illiteracy in the Andean Region of South America", url: "https://ballardbrief.byu.edu/issue-briefs/indigenous-adult-illiteracy-in-the-andean-region-of-south-america" }
+      ]
+    },
+    {
+      location: "France",
+      lat: 46.6034,
+      lng: 1.8883,
+      briefs: [
+        { title: "Religious Discrimination against Muslims in France", url: "https://ballardbrief.byu.edu/issue-briefs/religious-discrimination-against-muslims-in-france" }
+      ]
+    },
+    {
+      location: "Hawaii, United States",
+      lat: 19.8968,
+      lng: -155.5828,
+      briefs: [
+        { title: "Struggle for Hawaiian Cultural Survival", url: "https://ballardbrief.byu.edu/issue-briefs/struggle-for-hawaiian-cultural-survival" }
+      ]
+    },
+    {
+      location: "Mediterranean Sea",
+      lat: 34.5531,
+      lng: 18.048,
+      briefs: [
+        { title: "Migrant Smuggling Across the Mediterranean Sea", url: "https://ballardbrief.byu.edu/issue-briefs/migrant-smuggling-across-the-mediterranean-sea" }
+      ]
+    }, {
+      location: "Orlando, Florida, United States",
+      lat: 28.5383,
+      lng: -81.3792,
+      briefs: [
+        { title: "Mistreatment of Wild Animals in Captivity", url: "https://ballardbrief.byu.edu/issue-briefs/mistreatment-of-wild-animals-in-captivity" }
+      ]
+    }, 
+    {
+      location: "Utah, United States",
+      lat: 39.32,
+      lng: -111.0937,
+      briefs: [
+        { title: "Inadequate Support Systems for Children of Separated Parents in Utah", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-support-systems-for-children-of-separated-parents-in-utah" }
+      ]
+    }, 
+    {
+      location: "Sub-Saharan Africa",
+      lat: -1.9577,
+      lng: 30.1127,
+      briefs: [
+        { title: "Lack of Access to Maternal Healthcare in Sub-Saharan Africa", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-access-to-maternal-healthcare-in-sub-saharan-africa" },
+        { title: "Prevalence of Malaria in Sub-Saharan Africa", url: "https://ballardbrief.byu.edu/issue-briefs/prevalence-of-malaria-in-sub-saharan-africa" },
+        { title: "Prevelance of Tuberculosis in Sub-Saharan Africa", url: "https://ballardbrief.byu.edu/issue-briefs/sfkmbziffyb68h0s3dc9zyvuh566qe" }
+      ]
+    },
+    {
+      location: "Indonesia",
+      lat: -0.7893,
+      lng: 113.9213,
+      briefs: [
+        { title: "Indigenous Population Displacement in Indonesia", url: "https://ballardbrief.byu.edu/issue-briefs/indigenous-population-displacement-in-indonesia" }
+      ]
+    },
+    {
+      location: "Uganda",
+      lat: 1.3733,
+      lng: 32.2903,
+      briefs: [
+        { title: "Intimate Partner Violence Against Women in Uganda", url: "https://ballardbrief.byu.edu/issue-briefs/intimate-partner-violence-against-women-in-uganda" },
+        { title: "Food Insecurity Among Women in Uganda", url: "https://ballardbrief.byu.edu/issue-briefs/food-insecurity-among-women-in-uganda" },
+        { title: "Political Corruption in Uganda", url: "https://ballardbrief.byu.edu/issue-briefs/corruption-in-uganda" }
+      ]
+    },
+    {
+      location: "Pacific Islands",
+      lat: -6.315,
+      lng: 160.37,
+      briefs: [
+        { title: "Inadequate WASH Infrastructure Among Rural Populations in the Pacific Islands", url: "https://ballardbrief.byu.edu/issue-briefs/inadequate-wash-infrastructure-among-rural-populations-in-the-pacific-islands" }
+      ]
+    },
+    {
+      location: "Global",
+      lat: 0,
+      lng: 0,
+      briefs: [
+        { title: "Lack of Access to Insulin in Type 1 Diabetics Across the Globe", url: "https://ballardbrief.byu.edu/issue-briefs/lack-of-access-to-insulin-among-people-with-type-1-diabetes-in-the-us" }
+      ]
+    },
+    {
+      location: "Xinjiang (China)",
+      lat: 41.2044,
+      lng: 85.6534,
+      briefs: [
+        { title: "The Occupation of the Uyghur People by the Chinese Communist Party", url: "https://ballardbrief.byu.edu/issue-briefs/the-occupation-of-the-uyghur-people-by-the-chinese-communist-party" }
+      ]
+    },
+    {
+      location: "Mozambique",
+      lat: -18.6657,
+      lng: 35.5296,
+      briefs: [
+        { title: "WASH Practices in Mozambique", url: "https://ballardbrief.byu.edu/issue-briefs/wash-practices-in-mozambique" }
+      ]
+    },
+    {
+      location: "Myanmar",
+      lat: 21.9162,
+      lng: 95.956,
+      briefs: [
+        { title: "Child Labor in Myanmar", url: "https://ballardbrief.byu.edu/issue-briefs/child-labor-in-myanmar" }
+      ]
+    },
+    {
+      location: "Tonga",
+      lat: -21.1789,
+      lng: -175.1982,
+      briefs: [
+        { title: "Rise of Noncommunicable Disease among Adults in Tonga", url: "https://ballardbrief.byu.edu/issue-briefs/prevalence-of-non-communicable-disease-among-adults-in-tonga" }
+      ]
+    },
+    {
+      location: "Philippines",
+      lat: 13.41,
+      lng: 122.56,
+      briefs: [
+        { title: "Presence of Malnutrition and Severe Acute Malnutrition among Children in South Asia", url: "https://ballardbrief.byu.edu/issue-briefs/presence-of-malnutrition-and-severe-acute-malnutrition-among-children-in-south-asia" }
+      ]
+    },
+    {
+      location: "Korea",
+      lat: 35.9078,
+      lng: 127.7669,
+      briefs: [
+        { title: "Suicide Among Adolescents in Korea", url: "https://ballardbrief.byu.edu/issue-briefs/suicide-among-adolescents-in-south-korea" }
+      ]
+    },
+    {
+      location: "Yemen",
+      lat: 15.5527,
+      lng: 48.5164,
+      briefs: [
+        { title: "Waste Water and Mismanagement in Yemen", url: "https://ballardbrief.byu.edu/issue-briefs/water-waste-and-mismanagement-in-yemen" }
+      ]
+    },
+  ];
+
+  // Add markers
+  briefs.forEach(loc => {
+    const popupContent = `
+      <strong>${loc.location}</strong>
+      <ul style="padding-left: 1.2em; margin-top: 6px; max-height: 200px; overflow-y: auto;">
+        ${loc.briefs.map(b => `<li style="margin-bottom: 4px;"><a href="${b.url}" target="_blank">${b.title}</a></li>`).join("")}
+      </ul>
+    `;
+    L.marker([loc.lat, loc.lng]).addTo(map)
+      .bindPopup(popupContent);
+  });
+</script>
+
+</body>
+</html>
